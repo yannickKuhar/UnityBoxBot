@@ -9,13 +9,15 @@ public class Player : MonoBehaviour {
 	private Vector3 speed;
 	private float[] genom;
 	private double fitness;
+	private float maxTime;
 
 	// Use this for initialization
 	void Start ()
 	{
-		box = GameObject.Find("Box");
-		genom = new float[] {1.2f, 3.7f, -4.4f, 4.2f};
-		speed = new Vector3(genom[0] + genom[1], genom[2] + genom[3], 0.0f);
+		// box = GameObject.Find("Box");
+		// genom = new float[] {1.2f, 3.7f, -4.4f, 4.2f};
+		// speed = new Vector3(genom[0] + genom[1], genom[2] + genom[3], 0.0f);
+		InitPlayer();
 	}
 	
 	void OnCollisionEnter2D(Collision2D col)
@@ -30,6 +32,7 @@ public class Player : MonoBehaviour {
 	{
 		transform.position += speed * Time.fixedDeltaTime;
 		fitness = fitnessFunctuion(box);
+		Destroy(gameObject, maxTime);
 	}
 
 	double fitnessFunctuion(GameObject box)
@@ -41,4 +44,11 @@ public class Player : MonoBehaviour {
 		return Math.Sqrt((x * x) + (y * y) + (z * z));
 	}
 
+	void InitPlayer()
+	{ 
+		box = GameObject.Find("Box");
+		maxTime = 10f;
+		genom = new float[] {UnityEngine.Random.Range(-5, 5), UnityEngine.Random.Range(-5, 5), UnityEngine.Random.Range(-5, 5), UnityEngine.Random.Range(-5, 5)};
+		speed = new Vector3(genom[0] + genom[1], genom[2] + genom[3], 0.0f);
+	}
 }
