@@ -6,10 +6,15 @@ using System;
 public class Player : MonoBehaviour {
 
 	public GameObject box;
-	private Vector3 speed;
+	private Vector3 move;
+	private Rigidbody2D rb;
 	private float[] genom;
 	private double fitness;
 	private float maxTime;
+	private float dx;
+	private float dy;
+	private float speed;
+	
 
 	// Use this for initialization
 	void Start ()
@@ -29,8 +34,13 @@ public class Player : MonoBehaviour {
 	}
 
 	void FixedUpdate()
-	{
-		transform.position += speed * Time.fixedDeltaTime;
+	{	
+		// TODO: Make movment vector change.
+		transform.position += move * Time.fixedDeltaTime * speed;
+
+		Vector3 detlaDir = new Vector3(move.x + dx, move.y + dy, 0f);
+		rb.AddForce(detlaDir);
+
 		fitness = fitnessFunctuion(box);
 		Destroy(gameObject, maxTime);
 	}
@@ -46,9 +56,18 @@ public class Player : MonoBehaviour {
 
 	void InitPlayer()
 	{ 
+		rb = GetComponent<Rigidbody2D>();
 		box = GameObject.Find("Box");
 		maxTime = 10f;
-		genom = new float[] {UnityEngine.Random.Range(-5, 5), UnityEngine.Random.Range(-5, 5), UnityEngine.Random.Range(-5, 5), UnityEngine.Random.Range(-5, 5)};
-		speed = new Vector3(genom[0] + genom[1], genom[2] + genom[3], 0.0f);
+
+		genom = new float[] {UnityEngine.Random.Range(-5, 5), UnityEngine.Random.Range(-5, 5), UnityEngine.Random.Range(-5, 5),
+							 UnityEngine.Random.Range(-5, 5), UnityEngine.Random.Range(-5, 5), UnityEngine.Random.Range(-5, 5)};
+
+		dx = genom[0];
+		dy = genom[1];
+
+		move = new Vector3(genom[2] + genom[3], genom[4] + genom[5], 0.0f);
+
+		speed = 1.2f;
 	}
 }
