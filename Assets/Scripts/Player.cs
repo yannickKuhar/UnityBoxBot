@@ -5,6 +5,7 @@ using System;
 
 public class Player : MonoBehaviour {
 
+	public GameObject goal;
 	public GameObject box;
 	private Vector3 move;
 	private Rigidbody2D rb;
@@ -41,11 +42,11 @@ public class Player : MonoBehaviour {
 		Vector3 detlaDir = new Vector3(move.x + dx, move.y + dy, 0f);
 		rb.AddForce(detlaDir);
 
-		fitness = fitnessFunctuion(box);
+		fitness = fitnessFunctuionPlayerToBox(box) + fitnessFunctuionBoxToGoal(box, goal);
 		Destroy(gameObject, maxTime);
 	}
 
-	double fitnessFunctuion(GameObject box)
+	double fitnessFunctuionPlayerToBox(GameObject box)
 	{
 		float x = transform.position.x - box.transform.position.x;
 		float y = transform.position.y - box.transform.position.y;
@@ -54,10 +55,20 @@ public class Player : MonoBehaviour {
 		return Math.Sqrt((x * x) + (y * y) + (z * z));
 	}
 
-	void InitPlayer()
+	double fitnessFunctuionBoxToGoal(GameObject box, GameObject goal)
+	{
+		float x = goal.transform.position.x - box.transform.position.x;
+		float y = goal.transform.position.y - box.transform.position.y;
+		float z = goal.transform.position.z - box.transform.position.z;
+
+		return Math.Sqrt((x * x) + (y * y) + (z * z));
+	}
+	
+	public void InitPlayer()
 	{ 
 		rb = GetComponent<Rigidbody2D>();
 		box = GameObject.Find("Box");
+		goal = GameObject.Find("Goal");
 		maxTime = 10f;
 
 		genom = new float[] {UnityEngine.Random.Range(-5, 5), UnityEngine.Random.Range(-5, 5), UnityEngine.Random.Range(-5, 5),
@@ -69,5 +80,21 @@ public class Player : MonoBehaviour {
 		move = new Vector3(genom[2] + genom[3], genom[4] + genom[5], 0.0f);
 
 		speed = 1.2f;
+	}
+
+	//////////////////// Getters and Setters ////////////////////
+	public float[] GetGenom()
+	{
+		return genom;
+	}
+
+	public void SetGenom(float[] newGenom)
+	{
+		genom = newGenom;
+	}
+
+	public double GetFitness()
+	{
+		return fitness;
 	}
 }
