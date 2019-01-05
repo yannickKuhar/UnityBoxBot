@@ -5,12 +5,12 @@ using System;
 
 public class Player : MonoBehaviour {
 
-	public GameObject goal;
-	public GameObject box;
+	// private GameObject goal;
+	// private GameObject box;
 	private Vector3 move;
 	private Rigidbody2D rb;
 	private float[] genom;
-	private double fitness;
+	public double fitness;
 	private float maxTime;
 	private float dx;
 	private float dy;
@@ -42,11 +42,11 @@ public class Player : MonoBehaviour {
 		Vector3 detlaDir = new Vector3(move.x + dx, move.y + dy, 0f);
 		rb.AddForce(detlaDir);
 
-		fitness = fitnessFunctuionPlayerToBox(box) + fitnessFunctuionBoxToGoal(box, goal);
+		// fitness = fitnessFunctuionBoxToGoal(box, goal);
 		Destroy(gameObject, maxTime);
 	}
 
-	double fitnessFunctuionPlayerToBox(GameObject box)
+	double fitnessFunctuionPlayerToBox(Box box)
 	{
 		float x = transform.position.x - box.transform.position.x;
 		float y = transform.position.y - box.transform.position.y;
@@ -55,7 +55,7 @@ public class Player : MonoBehaviour {
 		return Math.Sqrt((x * x) + (y * y) + (z * z));
 	}
 
-	double fitnessFunctuionBoxToGoal(GameObject box, GameObject goal)
+	double fitnessFunctuionBoxToGoal(Box box, Goal goal)
 	{
 		float x = goal.transform.position.x - box.transform.position.x;
 		float y = goal.transform.position.y - box.transform.position.y;
@@ -67,8 +67,8 @@ public class Player : MonoBehaviour {
 	public void InitPlayer()
 	{ 
 		rb = GetComponent<Rigidbody2D>();
-		box = GameObject.Find("Box");
-		goal = GameObject.Find("Goal");
+		// box = GameObject.Find("Box");
+		// goal = GameObject.Find("Goal");
 		maxTime = 10f;
 
 		genom = new float[] {UnityEngine.Random.Range(-5, 5), UnityEngine.Random.Range(-5, 5), UnityEngine.Random.Range(-5, 5),
@@ -88,13 +88,19 @@ public class Player : MonoBehaviour {
 		return genom;
 	}
 
+	public double GetFitness()
+	{
+		return fitness;
+	}
+
 	public void SetGenom(float[] newGenom)
 	{
 		genom = newGenom;
 	}
 
-	public double GetFitness()
+	public void SetFitness(Box box, Goal goal)
 	{
-		return fitness;
+		// fitness = fitnessFunctuionBoxToGoal(box, goal);
+		fitness = fitnessFunctuionPlayerToBox(box) + fitnessFunctuionBoxToGoal(box, goal);
 	}
 }

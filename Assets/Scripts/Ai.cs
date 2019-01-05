@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
+using UnityEngine.UI;
 
 public class Ai : MonoBehaviour {
 
@@ -14,11 +14,13 @@ public class Ai : MonoBehaviour {
 	private int count = 0;
 	private int generation = 1;
 	private bool spawnNextGen;
+	private bool updateFun;
 
 	// Use this for initialization
 	void Start ()
 	{
 		spawnNextGen = true;
+		updateFun = true;
 
 		boxStartPoint = GameObject.Find("BoxStartPoint");
 
@@ -51,20 +53,32 @@ public class Ai : MonoBehaviour {
 			if(count >= population.Length) 
 			{	
 				// StartCoroutine(Delay());
-				Debug.Log(generation);
+				// Debug.Log(generation);
+
+				for(int i = 0; i < 128; i++)
+				{
+					population[i].SetFitness(box, goal);
+				}
+
 				population = GeneticAlgorithm(population);
+
 				count = 0;
 				generation++;
+
+				IncreaseGenCount();
+
 				box.transform.position = boxStartPoint.transform.position;
 				box.transform.rotation = boxStartPoint.transform.rotation;
 				box.RemoveForce();	
 			}
 		}
 
-		if(goal.GetHit())
+		if(goal.GetHit() && updateFun)
 		{
 			spawnNextGen = false;
-			Debug.Log("Resitev najdena v " + generation + ". generaciji!");
+			updateFun = false;
+			DisplayResult(generation);
+			// Debug.Log("Resitev najdena v " + generation + ". generaciji!");
 		}
 	}
 
@@ -93,6 +107,8 @@ public class Ai : MonoBehaviour {
 	Player[] Crossover(Player parent1, Player parent2) 
 	{
 		int n = parent1.GetGenom().Length;
+
+		// Debug.Log(parent1.GetFitness() + " " + parent2.GetFitness());
 
 		// Izberemo indeks rezanja.
 		int slice = (int) UnityEngine.Random.Range(1, (n - 1));
@@ -129,6 +145,8 @@ public class Ai : MonoBehaviour {
 	Player[] CrossoverWithoutHead(Player parent1, Player parent2)
 	{
 		int n = parent1.GetGenom().Length;
+
+		// Debug.Log(parent1.GetFitness() + " " + parent2.GetFitness());
 
 		int slice = (int) UnityEngine.Random.Range(3, (n - 1));
 
@@ -183,7 +201,7 @@ public class Ai : MonoBehaviour {
 		}
 
 		return best;
-	}
+	} 
 
 	Player[] GeneticAlgorithm(Player[] populateion)
 	{
@@ -243,5 +261,37 @@ public class Ai : MonoBehaviour {
 		}
 
 		return nextGen;
+	}
+
+	void IncreaseGenCount()
+	{
+		var textUIComp = GameObject.Find("GenerationCount").GetComponent<Text>();
+		int count = int.Parse(textUIComp.text);
+
+		count += 1;
+
+		textUIComp.text = count.ToString();
+	}
+
+	void DisplayResult(int generation)
+	{
+		var textUIComp = GameObject.Find("Result").GetComponent<Text>();
+
+		if(generation % 10 == 1)
+		{
+			textUIComp.text = "Result found in " + generation + "st generation.";	
+		}
+		else if(generation % 10 == 2)
+		{
+			textUIComp.text = "Result found in " + generation + "nd generation.";	
+		}
+		else if(generation % 10 == 3)
+		{
+			textUIComp.text = "Result found in " + generation + "rd generation.";	
+		}
+		else
+		{
+			textUIComp.text = "Result found in " + generation + "th generation.";
+		}
 	}
 }
